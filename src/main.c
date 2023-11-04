@@ -2,30 +2,22 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define TAILLE_SET 7
-#define SOUS_ENSEMBLES 6
-#define TAILLE_POPULATION 20
-#define NB_GEN 40
+#define TAILLE_POPULATION 10
+#define NB_GEN 5
 #define PM 0.3
 #define PNBM 0.2
 
+int TAILLE_SET;
+int NB_SOUS_ENSEMBLES;
+
 int **sous_ensembles = NULL;
-
-typedef struct solution {
-  int *tab;
-  int taille;
-} solution;
-
-int A[] = {1, 4, 7};
-int B[] = {1, 4};
-int C[] = {4, 5, 7};
-int D[] = {3, 5, 6};
-int E[] = {2, 3, 6, 7};
-int F[] = {2, 7};
 
 void afficher_tab(int *tab, int taille) {
   for (int i = 0; i < taille; i++) {
     printf("%d, ", tab[i]);
+    if(i==19){
+      printf("\n");
+    }
   }
   printf("\n");
 }
@@ -88,8 +80,8 @@ int *vectorize(int *sous_ensemble, int taille_sous_ensemble) {
 }
 
 int *init_individu() {
-  int *individu = alloc_tab(SOUS_ENSEMBLES);
-  for (int i = 0; i < SOUS_ENSEMBLES; i++) {
+  int *individu = alloc_tab(NB_SOUS_ENSEMBLES);
+  for (int i = 0; i < NB_SOUS_ENSEMBLES; i++) {
     individu[i] = rand() % 2;
   }
   return individu;
@@ -98,7 +90,7 @@ int *init_individu() {
 // parcours chaque bit, et le modifie avec une chance de 0.2
 void muter(int *individu) {
   int bool;
-  for (int i = 0; i < SOUS_ENSEMBLES; i++) {
+  for (int i = 0; i < NB_SOUS_ENSEMBLES; i++) {
     bool = rand() % 5; // 0 1 2 3 4
     if (bool == 4) {   // une chance sur 5 du coup
       if (individu[i] == 1) {
@@ -112,12 +104,12 @@ void muter(int *individu) {
 
 // retourne un nouvel individu basé sur papa et maman
 int *reproduction(int *papa, int *maman, int delim) {
-  int *bebe = alloc_tab(SOUS_ENSEMBLES);
+  int *bebe = alloc_tab(NB_SOUS_ENSEMBLES);
   int i;
   for (i = 0; i < delim; i++) {
     bebe[i] = papa[i];
   }
-  for (i = delim; i < SOUS_ENSEMBLES; i++) {
+  for (i = delim; i < NB_SOUS_ENSEMBLES; i++) {
     bebe[i] = maman[i];
   }
   return bebe;
@@ -126,7 +118,7 @@ int *reproduction(int *papa, int *maman, int delim) {
 // retourne un tableau de taille 2*TAILLE_POPULATION.
 // la premiere moitié est remplie avec des individus aléatoires.
 int **init_population() {
-  int **population = alloc_tab_2d(2 * TAILLE_POPULATION, SOUS_ENSEMBLES);
+  int **population = alloc_tab_2d(2 * TAILLE_POPULATION, NB_SOUS_ENSEMBLES);
   for (int i = 0; i < TAILLE_POPULATION; i++) {
     population[i] = init_individu();
   }
@@ -136,11 +128,11 @@ int **init_population() {
 // genere un couple aléatoirement parmi les TAILLE_POPULATION 1ers membres de la
 // population.
 int **couple_aleatoire(int **population) {
-  int **couple = alloc_tab_2d(2, SOUS_ENSEMBLES);
+  int **couple = alloc_tab_2d(2, NB_SOUS_ENSEMBLES);
   int papa, maman;
 
-  couple[0] = alloc_tab(SOUS_ENSEMBLES);
-  couple[1] = alloc_tab(SOUS_ENSEMBLES);
+  couple[0] = alloc_tab(NB_SOUS_ENSEMBLES);
+  couple[1] = alloc_tab(NB_SOUS_ENSEMBLES);
 
   papa = rand() % TAILLE_POPULATION;
   couple[0] = population[papa];
@@ -170,12 +162,7 @@ void appliquer_mutations(int **population) {
   for (int i = TAILLE_POPULATION; i < 2 * TAILLE_POPULATION; i++) {
     m = rand() % 10;
     if (m < 3) {
-      printf("\n\t- MUTATION: individu %d -\n", i);
-      printf("Avant: ");
-      afficher_tab(population[i], SOUS_ENSEMBLES);
       muter(population[i]);
-      printf("\nApres: ");
-      afficher_tab(population[i], SOUS_ENSEMBLES);
     }
   }
 }
@@ -183,13 +170,13 @@ void appliquer_mutations(int **population) {
 // retourne un tableau de vecteurs correspondant à l'individu.
 // taille du tableau = nombre de '1' dans l'individu.
 int **vectorize_individu(int *individu) {
-  int nb_sous_ensembles = count_ones(individu, SOUS_ENSEMBLES);
+  int nb_sous_ensembles = count_ones(individu, NB_SOUS_ENSEMBLES);
 
   int **tab = alloc_tab_2d(nb_sous_ensembles, TAILLE_SET);
   int tab_index = 0;
 
   // parcours des valeurs de l'individu
-  for (int i = 0; i < SOUS_ENSEMBLES; i++) {
+  for (int i = 0; i < NB_SOUS_ENSEMBLES; i++) {
     if (individu[i] == 1) {
       tab[tab_index] = sous_ensembles[i];
       tab_index++;
@@ -215,7 +202,7 @@ int *merege_vectors(int **vects, int vects_taille) {
 // retourne 1 si l'individu est une solution, 0 sinon
 int check_solution(int *individu) {
 
-  int taille_vects = count_ones(individu, SOUS_ENSEMBLES);
+  int taille_vects = count_ones(individu, NB_SOUS_ENSEMBLES);
   int **vects = vectorize_individu(individu);
 
   int *merged = merege_vectors(vects, taille_vects);
@@ -236,7 +223,7 @@ int *get_scores(int **double_population) {
 
   for (int i = 0; i < 2 * TAILLE_POPULATION; i++) {
     if (check_solution(double_population[i])) {
-      scores[i] = count_zeros(double_population[i], SOUS_ENSEMBLES)+1;
+      scores[i] = count_zeros(double_population[i], NB_SOUS_ENSEMBLES)+1;
     } else {
       scores[i] = 0;
     }
@@ -244,17 +231,21 @@ int *get_scores(int **double_population) {
   return scores;
 }
 
-void bubble_sort(int ** population){
-  int *scores = get_scores(population);
-  int i, j;
+void bubble_sort(int ** population, int *scores){
+  int i, j, swapped;
   for (i = 0; i < 2*TAILLE_POPULATION - 1; i++) {
+    swapped = 0;
     for (j = 0; j < 2*TAILLE_POPULATION - i - 1; j++) {
       if (scores[j] < scores[j + 1]) {
         swap(&scores[j], &scores[j + 1]);
         int *temp = population[j];
         population[j] = population[j+1];
         population[j+1] = temp;
+        swapped = 1;
       }
+    }
+    if(swapped == 0){
+      break;
     }
   }
 }
@@ -263,7 +254,7 @@ void afficher_res_format(int **population) {
   printf("   -  A  B  C  D  E  F  -\n");
   for (int i = 0; i < TAILLE_POPULATION; i++) {
     printf("* %02d: ", i);
-    for (int j = 0; j < SOUS_ENSEMBLES; j++) {
+    for (int j = 0; j < NB_SOUS_ENSEMBLES; j++) {
       if (population[i][j] == 1) {
         printf("X  ");
       } else {
@@ -274,31 +265,90 @@ void afficher_res_format(int **population) {
   }
 }
 
+void free_2d(int **tab, int x){
+  if(tab == NULL){
+    return;
+  }
+  for(int i = 0; i<x; i++){
+    if(tab[i] != NULL){
+      free(tab[i]);
+      tab[i] = NULL;
+    }
+  }
+  free(tab);
+  tab = NULL;
+}
+
+// Lecture fichier matrice.
+// 1ere ligne = nombre d'éléments de U. 
+// 2 eme ligne = nombre d'ensembles de S
+void init_from_file(const char * file){
+  FILE *fp = fopen(file, "r");
+  if(fp == NULL){
+    fprintf(stderr, "\n erreur fichier");
+    return ;
+  }
+
+  char buffer[128];
+
+  if(fgets(buffer, sizeof(buffer), fp) == NULL){
+    fprintf(stderr, "\nerreur lecture fichier");
+    return ;
+  }
+  TAILLE_SET = atoi(buffer);
+  if(fgets(buffer, sizeof(buffer), fp) == NULL){
+    fprintf(stderr, "\nerreur lecture fichier");
+    return ;
+  }
+  NB_SOUS_ENSEMBLES = atoi(buffer);
+  printf("\nTaille Set: %d, Nb sous_ensembles: %d\n", TAILLE_SET, NB_SOUS_ENSEMBLES);
+
+  if(TAILLE_SET > sizeof(buffer)){
+    fprintf(stderr, "\n Erreur: L'ensemble U est trop grand\n");
+    return ;
+  }
+
+  // allocation matrice:
+  sous_ensembles = alloc_tab_2d(NB_SOUS_ENSEMBLES, TAILLE_SET);
+  if (sous_ensembles == NULL) {
+    printf("\nerr\n");
+    return ;
+  }
+
+  char c = ' ';
+  int j = 0;
+  // lecture et remplissage de la matrice
+  for(int i = 0; i<NB_SOUS_ENSEMBLES; i++){
+
+    while(j < TAILLE_SET){
+      fread(&c, 1, 1, fp);
+      sous_ensembles[i][j] = atoi(&c);
+      j++;
+    }
+    j = 0;
+    fseek(fp, SEEK_CUR, 1);
+  }
+}
+
+
 int main() {
 
   srand(time(NULL));
+
   int i;
-  // 6 tableaux de 7 entiers
-  sous_ensembles = alloc_tab_2d(SOUS_ENSEMBLES, TAILLE_SET);
-  if (sous_ensembles == NULL) {
-    printf("\nerr\n");
-    return 1;
-  }
-  sous_ensembles[0] = vectorize(A, 3);
-  sous_ensembles[1] = vectorize(B, 2);
-  sous_ensembles[2] = vectorize(C, 3);
-  sous_ensembles[3] = vectorize(D, 3);
-  sous_ensembles[4] = vectorize(E, 5);
-  sous_ensembles[5] = vectorize(F, 2);
+  char filename[] = "src/test.txt";
+  init_from_file(filename);
 
   int ** population = init_population();
   int * scores;
-  for(int i = 0; i<NB_GEN; i++){
+  for(i = 0; i<NB_GEN; i++){
     nouvelle_generation(population);
     appliquer_mutations(population);
     
     scores = get_scores(population);
-    bubble_sort(population);
+    bubble_sort(population, scores);
+    printf("\n --- Gen %d ---\n", i);
+    afficher_tab(scores, 2*TAILLE_POPULATION);
   }
 
   printf("\n --- Résultats ---\n\n");
@@ -307,4 +357,31 @@ int main() {
   printf("\n --- Scores ---\n\n");
   afficher_tab(scores, 2*TAILLE_POPULATION);
 
+  free_2d(sous_ensembles, NB_SOUS_ENSEMBLES);
+  free_2d(population, 2*TAILLE_POPULATION);
+  free(scores);
+
+  return 0;
 }
+
+// int main() {
+//   srand(time(NULL));
+//
+//   init_from_file("src/test.txt");
+//   int **population = init_population();
+//   nouvelle_generation(population);
+//   printf("\n -- Population Initiale --\n");
+//   afficher_res_format(population);
+//
+//   printf("\n -- Scores --\n");
+//   int * scores = get_scores( population);
+//   afficher_tab(scores, 2*TAILLE_POPULATION);
+//
+//   printf("\n -- Scores Triés --\n");
+//   debug( population);
+//
+//   free(scores);
+//   free_2d(population, 2*TAILLE_POPULATION);
+//   free_2d(sous_ensembles, SOUS_ENSEMBLES);
+//   return 0;
+// }
