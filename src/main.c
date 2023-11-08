@@ -5,7 +5,7 @@ int NB_SOUS_ENSEMBLES;
 
 int **sous_ensembles = NULL;
 
-int main() {
+int genetic_main() {
 
   srand(time(NULL));
 
@@ -36,4 +36,19 @@ int main() {
   free(scores);
 
   return 0;
+}
+
+int main(){
+  srand(time(NULL));
+  char filename[] = "src/test.txt";
+  init_from_file(filename);
+
+  int i = 0;
+  int * current = calloc(NB_SOUS_ENSEMBLES, sizeof(int));
+
+  while(i < NB_SOUS_ENSEMBLES){
+    current[i] = -1;
+    
+    i++;
+  }
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #define TAILLE_POPULATION 10
 #define NB_GEN 5
@@ -75,3 +76,5 @@ void free_2d(int **tab, int x);
 // 1ere ligne = nombre d'éléments de U. 
 // 2 eme ligne = nombre d'ensembles de S
 void init_from_file(const char * file);
+
+void jsp(int *current);
