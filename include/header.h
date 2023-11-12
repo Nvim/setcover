@@ -12,6 +12,7 @@ extern int TAILLE_SET;
 extern int NB_SOUS_ENSEMBLES;
 
 extern int **sous_ensembles;
+extern int recursions;
 
 void afficher_tab(int *tab, int taille);
 
@@ -78,3 +79,4 @@ void free_2d(int **tab, int x);
 void init_from_file(const char * file);
 
 void jsp(int *current);
+void branchement(int *current, int index);
