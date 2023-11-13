@@ -4,8 +4,9 @@ int TAILLE_SET;
 int NB_SOUS_ENSEMBLES;
 
 int **sous_ensembles = NULL;
+int recursions = 0;
 
-int genetic_main() {
+int main() {
 
   srand(time(NULL));
 
@@ -38,21 +39,21 @@ int genetic_main() {
   return 0;
 }
 
-int recursions = 0;
-int main(){
-  srand(time(NULL));
-  char filename[] = "src/test.txt";
-  init_from_file(filename);
-
-  int i = 0;
-  int * current = calloc(NB_SOUS_ENSEMBLES, sizeof(int));
-
-  clock_t debut = clock();
-  branchement(current, 0);
-  clock_t fin = clock();
-
-  double temps = (double)(fin - debut) / CLOCKS_PER_SEC;
-  printf("Temps d'exécution : %f secondes\n", temps);
-  printf("Récursions: %d\n", recursions);
-  return 0;
-}
+// int recursions = 0;
+// int main(){
+//   srand(time(NULL));
+//   char filename[] = "src/test.txt";
+//   init_from_file(filename);
+//
+//   int i = 0;
+//   int * current = calloc(NB_SOUS_ENSEMBLES, sizeof(int));
+//
+//   clock_t debut = clock();
+//   branchement(current, 0);
+//   clock_t fin = clock();
+//
+//   double temps = (double)(fin - debut) / CLOCKS_PER_SEC;
+//   printf("Temps d'exécution : %f secondes\n", temps);
+//   printf("Récursions: %d\n", recursions);
+//   return 0;
+// }

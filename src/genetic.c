@@ -1,4 +1,5 @@
 #include "../include/header.h"
+#include <stdlib.h>
 
 int *init_individu() {
   int *individu = alloc_tab(NB_SOUS_ENSEMBLES);
@@ -10,10 +11,10 @@ int *init_individu() {
 
 // parcours chaque bit, et le modifie avec une chance de 0.2
 void muter(int *individu) {
-  int bool;
+  double random;
   for (int i = 0; i < NB_SOUS_ENSEMBLES; i++) {
-    bool = rand() % 5; // 0 1 2 3 4
-    if (bool == 4) {   // une chance sur 5 du coup
+    random = (double)rand() /  RAND_MAX; // Nombre aléatoire entre 0 et 1
+    if (random < PNBM) {   // une chance sur PNBM
       if (individu[i] == 1) {
         individu[i] = 0;
       } else {
@@ -79,10 +80,10 @@ void nouvelle_generation(int **population) {
 
 // applique des mutations aux enfants (2eme moitié de la population)
 void appliquer_mutations(int **population) {
-  int m;
+  double m;
   for (int i = TAILLE_POPULATION; i < 2 * TAILLE_POPULATION; i++) {
-    m = rand() % 10;
-    if (m < 3) {
+    m = (double)rand() / RAND_MAX;
+    if (m < PM) {
       muter(population[i]);
     }
   }
