@@ -79,4 +79,4 @@ void free_2d(int **tab, int x);
 void init_from_file(const char * file);
 
 void jsp(int *current);
-void branchement(int *current, int index);
+void branchement(int *current, int index, int best_score);

@@ -68,13 +68,18 @@ void jsp(int *current) {
   afficher_tab(current, NB_SOUS_ENSEMBLES);
 }
 
-void branchement(int *current, int index) {
+void branchement(int *current, int index, int best) {
 
   recursions++;
+  if (count_ones(current, NB_SOUS_ENSEMBLES) < best) {
+    best = count_ones(current, NB_SOUS_ENSEMBLES);
+  }
+  if (count_ones(current, NB_SOUS_ENSEMBLES) > best) {
+    return;
+  }
   if (check_solution(current)) {
-
     printf("\n\t---Solution Minimale---\n");
-    printf("~%d~ ", count_ones(current, NB_SOUS_ENSEMBLES));
+    printf("**%d**\t", count_ones(current, NB_SOUS_ENSEMBLES));
     afficher_tab(current, NB_SOUS_ENSEMBLES);
     return;
   }
@@ -85,11 +90,11 @@ void branchement(int *current, int index) {
 
   current[index] = 1;
   if (can_continue(current, index + 1)) {
-    branchement(current, index + 1);
+    branchement(current, index + 1, best);
   }
 
   current[index] = 0;
   if (can_continue(current, index + 1)) {
-    branchement(current, index + 1);
+    branchement(current, index + 1, best);
   }
 }
