@@ -41,18 +41,21 @@ int **sous_ensembles = NULL;
 int recursions = 0;
 int main(){
   srand(time(NULL));
-  char filename[] = "src/test.txt";
+  char filename[] = "src/large.txt";
   init_from_file(filename);
 
   int i = 0;
   int * current = calloc(NB_SOUS_ENSEMBLES, sizeof(int));
+  int min;
 
   clock_t debut = clock();
-  branchement(current, 0, NB_SOUS_ENSEMBLES);
+  // branchement(current, 0, NB_SOUS_ENSEMBLES);
+  min = branchement(current, 0, NB_SOUS_ENSEMBLES);
   clock_t fin = clock();
 
   double temps = (double)(fin - debut) / CLOCKS_PER_SEC;
   printf("Temps d'exécution : %f secondes\n", temps);
   printf("Récursions: %d\n", recursions);
+  printf("Min: %d\n", min);
   return 0;
 }
