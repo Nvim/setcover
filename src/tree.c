@@ -1,5 +1,7 @@
 #include "../include/header.h"
 
+/***** FONCTIONS POUR L'ALGORITHME DE BRANCHEMENT ******/
+
 // retourne 1 si il reste des solutions en disant non à la courante
 int can_say_no(int *current) {
   int i = 0;
@@ -22,7 +24,7 @@ int can_say_no(int *current) {
     i++;
   }
 
-  if (check_solution(current)) {
+  if (check_solution_mieux(current)) {
     return 1;
   } else
     return 0;
@@ -37,35 +39,10 @@ int can_continue(int *current, int index) {
   for (int i = index; i < NB_SOUS_ENSEMBLES; i++) {
     cur_cpy[i] = 1;
   }
-  if (check_solution(cur_cpy)) {
+  if (check_solution_mieux(cur_cpy)) {
     return 1;
   }
   return 0;
-}
-
-// bloqué car on aura i > NB_SOUS_ENSEMBLES après un premier passage sur
-// l'arbre. on a potentiellement bcp plus de 6 appels récursif pour tout
-// parcourir, mais on doit trouver moyen de s'arreter à la fin de current.
-void jsp(int *current) {
-  static int i = 0;
-
-  if (i == NB_SOUS_ENSEMBLES) {
-    return;
-  }
-  current[i] = -1;
-
-  if (can_say_no(current)) {
-    current[i] = 0;
-    i++;
-    jsp(current);
-  } else {
-    current[i] = 1;
-    i++;
-    jsp(current);
-  }
-
-  printf("\n\t---Solution Minimale---\n");
-  afficher_tab(current, NB_SOUS_ENSEMBLES);
 }
 
 // best = NB_SOUS_ENSEMBLES au 1er appel
@@ -76,7 +53,7 @@ int branchement(int *current, int index, int best) {
     return best;
   }
   // Déjà solution ?
-  if (check_solution(current)) {
+  if (check_solution_mieux(current)) {
     printf("\n\t---Solution Minimale---\n");
     printf("**%d**\t", count_ones(current, NB_SOUS_ENSEMBLES));
     afficher_tab(current, NB_SOUS_ENSEMBLES);
@@ -89,7 +66,7 @@ int branchement(int *current, int index, int best) {
   // OUI
   current[index] = 1;
   // if (can_continue(current, index + 1)) {
-    best = branchement(current, index + 1, best);
+  best = branchement(current, index + 1, best);
   // }
   // NON
   current[index] = 0;

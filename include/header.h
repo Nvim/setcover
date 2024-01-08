@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
+#include <time.h>
 
 #define TAILLE_POPULATION 10
-#define NB_GEN 5
+#define NB_GEN 40
 #define PM 0.3
 #define PNBM 0.2
 
@@ -13,6 +13,7 @@ extern int NB_SOUS_ENSEMBLES;
 
 extern int **sous_ensembles;
 extern int recursions;
+extern char alphabet[];
 
 void afficher_tab(int *tab, int taille);
 
@@ -61,22 +62,24 @@ int *merege_vectors(int **vects, int vects_taille);
 
 // retourne 1 si l'individu est une solution, 0 sinon
 int check_solution(int *individu);
+int check_solution_mieux(int *individu);
 
 // retourne un tableau de tous les scores d'une double population.
 // score = count_zeros()+1 si solution, 0 sinon.
 // => 0 <= score <= SOUS_ENSEMBLES
 int *get_scores(int **double_population);
 
-void bubble_sort(int ** population, int *scores);
+void bubble_sort(int **population, int *scores);
+void selection_sort(int **population, int *scores);
 
 void afficher_res_format(int **population);
 
 void free_2d(int **tab, int x);
 
 // Lecture fichier matrice.
-// 1ere ligne = nombre d'éléments de U. 
+// 1ere ligne = nombre d'éléments de U.
 // 2 eme ligne = nombre d'ensembles de S
-void init_from_file(const char * file);
+void init_from_file(const char *file);
 
 void jsp(int *current);
 

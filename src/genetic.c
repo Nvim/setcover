@@ -1,6 +1,8 @@
 #include "../include/header.h"
 #include <stdlib.h>
 
+/***** FONCTIONS POUR L'ALGORITHME GENETIQUE ******/
+
 int *init_individu() {
   int *individu = alloc_tab(NB_SOUS_ENSEMBLES);
   for (int i = 0; i < NB_SOUS_ENSEMBLES; i++) {
@@ -13,8 +15,8 @@ int *init_individu() {
 void muter(int *individu) {
   double random;
   for (int i = 0; i < NB_SOUS_ENSEMBLES; i++) {
-    random = (double)rand() /  RAND_MAX; // Nombre aléatoire entre 0 et 1
-    if (random < PNBM) {   // une chance sur PNBM
+    random = (double)rand() / RAND_MAX; // Nombre aléatoire entre 0 et 1
+    if (random < PNBM) {                // une chance sur PNBM
       if (individu[i] == 1) {
         individu[i] = 0;
       } else {
@@ -115,7 +117,7 @@ int *get_scores(int **double_population) {
 
   for (int i = 0; i < 2 * TAILLE_POPULATION; i++) {
     if (check_solution(double_population[i])) {
-      scores[i] = count_zeros(double_population[i], NB_SOUS_ENSEMBLES)+1;
+      scores[i] = count_zeros(double_population[i], NB_SOUS_ENSEMBLES) + 1;
     } else {
       scores[i] = 0;
     }
@@ -123,27 +125,86 @@ int *get_scores(int **double_population) {
   return scores;
 }
 
-void bubble_sort(int ** population, int *scores){
+void bubble_sort(int **population, int *scores) {
   int i, j, swapped;
-  for (i = 0; i < 2*TAILLE_POPULATION - 1; i++) {
+  for (i = 0; i < 2 * TAILLE_POPULATION - 1; i++) {
     swapped = 0;
-    for (j = 0; j < 2*TAILLE_POPULATION - i - 1; j++) {
+    for (j = 0; j < 2 * TAILLE_POPULATION - i - 1; j++) {
       if (scores[j] < scores[j + 1]) {
         swap(&scores[j], &scores[j + 1]);
         int *temp = population[j];
-        population[j] = population[j+1];
-        population[j+1] = temp;
+        population[j] = population[j + 1];
+        population[j + 1] = temp;
         swapped = 1;
       }
     }
-    if(swapped == 0){
+    if (swapped == 0) {
       break;
     }
   }
 }
 
+void selection_sort_(int **population, int *scores) {
+  int i, j, min_index;
+  for (i = 0; i < 2 * TAILLE_POPULATION - 1; i++) {
+    min_index = i;
+    for (j = i + 1; j < 2 * TAILLE_POPULATION; j++) {
+      if (scores[j] < scores[min_index]) {
+        min_index = j;
+      }
+    }
+    if (min_index != i) {
+      swap(&scores[i], &scores[min_index]);
+      int *temp = population[i];
+      population[i] = population[min_index];
+      population[min_index] = temp;
+    }
+  }
+}
+
+void selection_sort(int **population, int *scores) {
+  int i, j, max_index;
+  for (i = 0; i < 2 * TAILLE_POPULATION - 1; i++) {
+    max_index = i;
+    for (j = i + 1; j < 2 * TAILLE_POPULATION; j++) {
+      if (scores[j] > scores[max_index]) {
+        max_index = j;
+      }
+    }
+
+    if (max_index != i) {
+      swap(&scores[i], &scores[max_index]);
+      int *temp = population[i];
+      population[i] = population[max_index];
+      population[max_index] = temp;
+    }
+  }
+}
+
+void selection(int *tab, int taille) {
+  int i, j, min_index;
+  for (i = 0; i < taille - 1; i++) {
+    // Trouver l'indice du minimum dans la partie non triée
+    min_index = i;
+    for (j = i + 1; j < taille; j++) {
+      if (tab[j] < tab[min_index]) {
+        min_index = j;
+      }
+    }
+    // Échanger l'élément minimum avec l'élément à la position i
+    if (min_index != i) {
+      swap(&tab[i], &tab[min_index]);
+    }
+  }
+}
+
 void afficher_res_format(int **population) {
-  printf("   -  A  B  C  D  E  F  -\n");
+  // printf("   -  A  B  C  D  E  F  -\n");
+  printf("   - ");
+  for (int i = 0; i < NB_SOUS_ENSEMBLES; i++) {
+    printf(" %c ", alphabet[i]);
+  }
+  printf(" -\n");
   for (int i = 0; i < TAILLE_POPULATION; i++) {
     printf("* %02d: ", i);
     for (int j = 0; j < NB_SOUS_ENSEMBLES; j++) {

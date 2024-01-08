@@ -1,10 +1,12 @@
 #include "../include/header.h"
+#include <stdio.h>
 
+/***** FONCTIONS COMMUNES AUX 2 ALGORITHMES ******/
 
 void afficher_tab(int *tab, int taille) {
   for (int i = 0; i < taille; i++) {
     printf("%d, ", tab[i]);
-    if(i==19){
+    if (i == 19) {
       printf("\n");
     }
   }
@@ -98,12 +100,33 @@ int check_solution(int *individu) {
   return 1;
 }
 
-void free_2d(int **tab, int x){
-  if(tab == NULL){
+// retourne 1 si l'individu est une solution, 0 sinon
+int check_solution_mieux(int *individu) {
+
+  int *tab = calloc(TAILLE_SET, sizeof(int));
+  for (int i = 0; i < NB_SOUS_ENSEMBLES; i++) {
+    if (individu[i] == 1) {
+      for (int j = 0; j < TAILLE_SET; j++) {
+        if (sous_ensembles[i][j] == 1) {
+          tab[j] = 1;
+        }
+      }
+    }
+  }
+  for (int i = 0; i < TAILLE_SET; i++) {
+    if (tab[i] == 0) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+void free_2d(int **tab, int x) {
+  if (tab == NULL) {
     return;
   }
-  for(int i = 0; i<x; i++){
-    if(tab[i] != NULL){
+  for (int i = 0; i < x; i++) {
+    if (tab[i] != NULL) {
       free(tab[i]);
       tab[i] = NULL;
     }
@@ -113,47 +136,48 @@ void free_2d(int **tab, int x){
 }
 
 // Lecture fichier matrice.
-// 1ere ligne = nombre d'éléments de U. 
+// 1ere ligne = nombre d'éléments de U.
 // 2 eme ligne = nombre d'ensembles de S
-void init_from_file(const char * file){
+void init_from_file(const char *file) {
   FILE *fp = fopen(file, "r");
-  if(fp == NULL){
+  if (fp == NULL) {
     fprintf(stderr, "\n erreur fichier");
-    return ;
+    return;
   }
 
   char buffer[128];
 
-  if(fgets(buffer, sizeof(buffer), fp) == NULL){
+  if (fgets(buffer, sizeof(buffer), fp) == NULL) {
     fprintf(stderr, "\nerreur lecture fichier");
-    return ;
+    return;
   }
   TAILLE_SET = atoi(buffer);
-  if(fgets(buffer, sizeof(buffer), fp) == NULL){
+  if (fgets(buffer, sizeof(buffer), fp) == NULL) {
     fprintf(stderr, "\nerreur lecture fichier");
-    return ;
+    return;
   }
   NB_SOUS_ENSEMBLES = atoi(buffer);
-  printf("\nTaille Set: %d, Nb sous_ensembles: %d\n", TAILLE_SET, NB_SOUS_ENSEMBLES);
+  printf("\nTaille Set: %d, Nb sous_ensembles: %d\n", TAILLE_SET,
+         NB_SOUS_ENSEMBLES);
 
-  if(TAILLE_SET > sizeof(buffer)){
+  if (TAILLE_SET > sizeof(buffer)) {
     fprintf(stderr, "\n Erreur: L'ensemble U est trop grand\n");
-    return ;
+    return;
   }
 
   // allocation matrice:
   sous_ensembles = alloc_tab_2d(NB_SOUS_ENSEMBLES, TAILLE_SET);
   if (sous_ensembles == NULL) {
     printf("\nerr\n");
-    return ;
+    return;
   }
 
   char c = ' ';
   int j = 0;
   // lecture et remplissage de la matrice
-  for(int i = 0; i<NB_SOUS_ENSEMBLES; i++){
+  for (int i = 0; i < NB_SOUS_ENSEMBLES; i++) {
 
-    while(j < TAILLE_SET){
+    while (j < TAILLE_SET) {
       fread(&c, 1, 1, fp);
       sous_ensembles[i][j] = atoi(&c);
       j++;
@@ -162,4 +186,3 @@ void init_from_file(const char * file){
     fseek(fp, SEEK_CUR, 1);
   }
 }
-
