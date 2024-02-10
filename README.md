@@ -9,6 +9,12 @@ des solutions optimales au problème.
 
 ### Utilisation
 
+#### Compilation
+
+```
+make
+```
+
 #### Algorithme Génétique
 
 ```
